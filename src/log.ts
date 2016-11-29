@@ -12,6 +12,7 @@ import {DateTime, DateTimeExpr} from './datetime';
 import {FieldDef} from './fielddef';
 import {Mark} from './mark';
 import {TimeUnit} from './timeunit';
+import {Type} from './type';
 import {ScaleType} from './scale';
 
 export {LoggerInterface} from 'vega-util';
@@ -102,6 +103,14 @@ export namespace message {
   export const DEPRECATED_FILTER_NULL = 'filterNull is deprecated. Please use filterInvalid instead.';
 
   // ENCODING & FACET
+  export function invalidFieldType(type: Type) {
+    return `Invalid field type "${type}"`;
+  }
+
+  export function emptyOrInvalidFieldType(type: Type | string, channel: Channel, newType: Type) {
+    return `Invalid field type (${type}) for channel ${channel}, using ${newType} instead.`;
+  }
+
   export function emptyFieldDef(fieldDef: FieldDef, channel: Channel) {
     return `Dropping ${JSON.stringify(fieldDef)} from channel ${channel} since it does not contain data field or value.`;
   }
