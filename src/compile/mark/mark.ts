@@ -219,14 +219,15 @@ function getStackByFields(model: UnitModel) {
   const encoding = model.encoding();
 
   return STACK_GROUP_CHANNELS.reduce(function(fields, channel) {
-    const channelEncoding = encoding[channel];
+    const channelDef = encoding[channel];
     if (has(encoding, channel)) {
-      if (isArray(channelEncoding)) {
-        channelEncoding.forEach(function(fieldDef) {
+      if (isArray(channelDef)) {
+        const cEnc: (FieldDef | OrderChannelDef)[] = channelDef;
+        cEnc.forEach((fieldDef) => {
           fields.push(field(fieldDef));
         });
       } else {
-        const fieldDef: FieldDef = channelEncoding;
+        const fieldDef: FieldDef = channelDef;
         const scale = model.scale(channel);
         const _field = field(fieldDef, {
           binSuffix: scale && hasDiscreteDomain(scale.type) ? 'range' : 'start'
@@ -237,7 +238,7 @@ function getStackByFields(model: UnitModel) {
       }
     }
     return fields;
-  }, []);
+  }, [] as string[]);
 }
 
 // impute data for stacked area
@@ -256,8 +257,9 @@ function imputeTransform(model: UnitModel, stackFields: string[]) {
 function stackTransform(model: UnitModel, stackFields: string[]) {
   const stack = model.stack();
   const encoding = model.encoding();
+  const order = encoding[ORDER];
   const sortby = model.has(ORDER) ?
-    (isArray(encoding[ORDER]) ? encoding[ORDER] : [encoding[ORDER]]).map(sortField) :
+    (isArray(order) ? order : [order]).map(sortField) :
     // default = descending by stackFields
     stackFields.map(function(field) {
      return '-' + field;
